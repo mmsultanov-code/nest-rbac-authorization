@@ -9,7 +9,7 @@ import { RolesModel } from '../../roles/entity/roles.model'
     indexes: [
         {
             unique: true,
-            fields: ['slug']
+            fields: ['name']
         }
     ]
 })
@@ -22,11 +22,6 @@ export class PermissionsModel extends Model {
 
     @Column
     name: string
-
-    @Column({
-        unique: true
-    })
-    slug: string
 
     @BelongsToMany(() => RolesModel, () => RolePermissionsModel)
     roles: RolesModel[]

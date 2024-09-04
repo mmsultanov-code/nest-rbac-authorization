@@ -65,7 +65,7 @@ export class PermissionsGuard implements CanActivate {
                     include: [PermissionsModel]
                 }
             })
-            return response.role.permissions.map((permission) => permission.slug)
+            return response.role.permissions.map((permission) => permission.name)
         } catch (error) {
             throw new UnauthorizedException()
         }

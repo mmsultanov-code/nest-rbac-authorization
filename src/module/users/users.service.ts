@@ -12,6 +12,7 @@ import { ResponseAllUsersInterface } from './interface/response-all-users.interf
 import { ResponseOneUserInterface } from './interface/response-one-user.interface';
 import { UpdateUserInterface } from './interface/update-user.interface';
 import { RolesModel } from '../roles/entity/roles.model';
+import { ResponseUserRegisterInterface } from './interface/response-user-register.interface';
 
 @Injectable()
 export class UsersService {
@@ -120,4 +121,30 @@ export class UsersService {
             attributes: ['id', 'first_name', 'last_name', 'email', 'password', 'role_id', 'is_active', 'is_deleted', 'created_at', 'updated_at', 'password']
         });
     }
+
+    /**
+     * Register a new user.
+     *
+     * @param user_data - The user data used to create the user.
+     * @returns A promise that resolves to the created user.
+     * @throws {UserExistsException} If a user with the same email already exists.
+     * @throws {Error} If an error occurs while creating the user.
+     */
+    async register(user_data: Partial<CreateUserInterface>): Promise<ResponseUserRegisterInterface> {
+        const UserExists = await this.userModel.findOne({ where: { email: user_data.email } })
+        if (UserExists) {
+            throw new UserExistsException()
+        }
+        try {
+            const salt_or_rounds = Number(process.env.SALT) || 12;
+            const password = user_data.password;
+            const hashed_password = await bcrypt.hash(password, salt_or_rounds);
+            user_data = { ...user_data, role_id: 1, password: hashed_password }
+            const user = await this.userModel.create(user_data)
+            return user
+        } catch (err) {
+            throw new Error(err)
+        }
+    }
+
 }
