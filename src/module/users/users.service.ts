@@ -130,20 +130,24 @@ export class UsersService {
      * @throws {UserExistsException} If a user with the same email already exists.
      * @throws {Error} If an error occurs while creating the user.
      */
-    async register(user_data: Partial<CreateUserInterface>): Promise<ResponseUserRegisterInterface> {
-        const UserExists = await this.userModel.findOne({ where: { email: user_data.email } })
+    async register(user_data: Partial<CreateUserInterface>): Promise<ResponseUserRegisterInterface | { error: string }> {
+        const UserExists = await this.userModel.findOne({ where: { email: user_data.email } });
+    
         if (UserExists) {
-            throw new UserExistsException()
+            return { error: 'User already exists' };
         }
+    
         try {
             const salt_or_rounds = Number(process.env.SALT) || 12;
             const password = user_data.password;
             const hashed_password = await bcrypt.hash(password, salt_or_rounds);
-            user_data = { ...user_data, role_id: 1, password: hashed_password }
-            const user = await this.userModel.create(user_data)
-            return user
+    
+            user_data = { ...user_data, role_id: 2, password: hashed_password };
+            const user = await this.userModel.create(user_data);
+    
+            return user;
         } catch (err) {
-            throw new Error(err)
+            return { error: 'Error during user creation' };
         }
     }
 

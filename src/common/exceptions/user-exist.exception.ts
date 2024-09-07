@@ -1,7 +1,7 @@
-import { HttpException } from '@nestjs/common'
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class UserExistsException extends HttpException {
-    constructor() {
-        super('User already exists', 400)
+    constructor(message: string = 'User already exists') {
+        super(message, HttpStatus.CONFLICT);  // Код 409 — конфликт
     }
 }

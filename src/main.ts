@@ -1,15 +1,25 @@
-import { NestFactory, Reflector } from '@nestjs/core'
+import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { ValidationPipe } from '@nestjs/common'
+import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule)
+    const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+        transport: Transport.RMQ,
+        options: {
+            urls: ['amqp://localhost:5672'],
+            queue: 'main_queue',
+            queueOptions: {
+                durable: false
+            }
+        }
+    })
     app.useGlobalPipes(
         new ValidationPipe({
             whitelist: true,
             transform: true
         })
     )
-    await app.listen(Number(process.env.PORT) || 3000)
+    await app.listen()
 }
 bootstrap()
