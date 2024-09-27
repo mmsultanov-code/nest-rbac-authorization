@@ -1,7 +1,7 @@
 import { Model, Column, HasMany, Table, BelongsToMany } from 'sequelize-typescript'
-import { RolePermissionsModel } from './../../permissions/entity/role-permissions.model'
-import { PermissionsModel } from './../../permissions/entity/permissions.model'
-import { UserModel } from './../../users/entity/user.model'
+import { RolePermissionsModel } from './../../permissions/models/role-permissions.model'
+import { PermissionsModel } from './../../permissions/models/permissions.model'
+import { UserModel } from './../../users/models/user.model'
 
 @Table({
     tableName: 'roles',
@@ -32,8 +32,8 @@ export class RolesModel extends Model {
     slug: string
 
     @HasMany(() => UserModel, { foreignKey: 'role_id' })
-    users: UserModel[]
+    users: Array<UserModel>
 
     @BelongsToMany(() => PermissionsModel, () => RolePermissionsModel)
-    permissions: PermissionsModel[]
+    permissions: Array<PermissionsModel>
 }

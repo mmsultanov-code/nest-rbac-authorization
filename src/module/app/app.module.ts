@@ -1,16 +1,17 @@
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { UsersModule } from './module/users/users.module'
-import { PermissionsModule } from './module/permissions/permissions.module'
-import { RolesModule } from './module/roles/roles.module'
+import { UsersModule } from '../users/users.module'
+import { PermissionsModule } from '../permissions/permissions.module'
+import { RolesModule } from '../roles/roles.module'
 import { ConfigModule } from '@nestjs/config'
 import { SequelizeModule } from '@nestjs/sequelize'
-import { UserModel } from './module/users/entity/user.model'
-import { PermissionsModel } from './module/permissions/entity/permissions.model'
-import { RolesModel } from './module/roles/entity/roles.model'
-import { RolePermissionsModel } from './module/permissions/entity/role-permissions.model'
-import { AuthModule } from './module/auth/auth.module';
+import { UserModel } from '../users/models/user.model'
+import { PermissionsModel } from '../permissions/models/permissions.model'
+import { RolesModel } from '../roles/models/roles.model'
+import { RolePermissionsModel } from '../permissions/models/role-permissions.model'
+import { AuthModule } from '../auth/auth.module'
+import { ParseModule } from '../parse/parse.module'
 
 @Module({
     imports: [
@@ -27,18 +28,14 @@ import { AuthModule } from './module/auth/auth.module';
                 database: process.env.DB_NAME,
                 autoLoadModels: true,
                 synchronize: true,
-                models: [
-                    UserModel,
-                    PermissionsModel,
-                    RolesModel,
-                    RolePermissionsModel
-                ]
+                models: [UserModel, PermissionsModel, RolesModel, RolePermissionsModel]
             })
         }),
+        ParseModule,
+        AuthModule,
         UsersModule,
         PermissionsModule,
-        RolesModule,
-        AuthModule
+        RolesModule
     ],
     controllers: [AppController],
     providers: [AppService]
